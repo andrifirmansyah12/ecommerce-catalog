@@ -16,11 +16,13 @@ const routes = [
         name: "Unavailable",
         path: "/unavailable",
         component: Unavailable,
+        props: true
     },
     {
         name: "Home",
         path: "/",
         component: MensCloth,
+        props: true
     },
 ];
 

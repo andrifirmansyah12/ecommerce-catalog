@@ -1,12 +1,16 @@
 <script>
 import axios from "axios";
 export default {
-  data: () => {
-    return {
-      products: [],
-      number: 1,
-      isloaded: false,
-    };
+  props: ['id'],
+  data: function () {
+      return {
+        products: [],
+        numberNext: this.id,
+        number: 1,
+        isloaded: false,
+        mens: "men's clothing",
+        womens: "women's clothing",
+      }
   },
   mounted() {
     document.onreadystatechange = () => {
@@ -26,16 +30,70 @@ export default {
           this.isloaded = true;
         }, 2000);
         this.$router.go();
+      } else if (this.numberNext > 20) {
+        this.isloaded = false;
+        setTimeout(() => {
+          this.isloaded = true;
+        }, 2000);
+        this.$router.go();
       } else {
-        axios
-          .get("https://fakestoreapi.com/products/" + this.number++)
-          .then((response) => {
-            this.isloaded = false;
-            this.products = response.data;
-            setTimeout(() => {
-              this.isloaded = true;
-            }, 2000);
-          });
+        if (this.id) {
+          axios
+            .get("https://fakestoreapi.com/products/" + this.numberNext++)
+            .then((response) => {
+              if (response.data.category === this.mens) {
+                this.isloaded = false;
+                this.products = response.data;
+                setTimeout(() => {
+                  this.isloaded = true;
+                }, 2000);
+              } else if (response.data.category === this.womens) {
+                this.isloaded = false;
+                this.products = response.data;
+                setTimeout(() => {
+                  this.isloaded = true;
+                }, 2000);
+              } else {
+                this.$router.push({
+                  name: "Unavailable",
+                  params: {
+                    id: response.data.id,
+                    next: response.data.id + 1,
+                  },
+                });
+              }
+            });
+        } else {
+          axios
+            .get("https://fakestoreapi.com/products/" + this.number++)
+            .then((response) => {
+              if (response.data.category === this.mens) {
+                this.isloaded = false;
+                this.products = response.data;
+                setTimeout(() => {
+                  this.isloaded = true;
+                }, 2000);
+              } else if (response.data.category === this.womens) {
+                this.isloaded = false;
+                this.products = response.data;
+                setTimeout(() => {
+                  this.isloaded = true;
+                }, 2000);
+              } else {
+                this.isloaded = false;
+                setTimeout(() => {
+                  this.isloaded = true;
+                }, 2000);
+                this.$router.push({
+                  name: "Unavailable",
+                  params: {
+                    id: response.data.id,
+                    next: response.data.id + 1,
+                  },
+                });
+              }
+            });
+        }
       }
     },
   },
@@ -81,17 +139,30 @@ export default {
           />
         </div>
         <div class="lg:w-1/2 w-full lg:pl-10 lg:py-6 mt-6 lg:mt-0">
-          <h1
+          <!-- // Mens Clothing -->
+          <h1 v-if="products.category == this.mens"
             class="text-3xl title-font font-medium mb-1"
             style="color: var(--color-4)"
           >
             {{ products.title }}
           </h1>
+          <!-- // Mens Clothing -->
+
+          <!-- // Womens Clothing -->
+          <h1 v-else-if="products.category == this.womens"
+            class="text-3xl title-font font-medium mb-1"
+            style="color: var(--color-1)"
+          >
+            {{ products.title }}
+          </h1>
+          <!-- // Womens Clothing -->
           <div class="flex justify-between mb-4 border-b">
             <span class="flex py-2 border-gray-200">
               <span style="color: var(--color-6)">{{ products.category }}</span>
             </span>
-            <span class="flex items-center">
+
+            <!-- // Mens Clothing -->
+            <span class="flex items-center" v-if="products.category == this.mens">
               <span class="mr-3" v-if="!isloaded" style="color: var(--color-6)"
                 >0/5</span
               >
@@ -167,18 +238,113 @@ export default {
                 ></path>
               </svg>
             </span>
+            <!-- // Mens Clothing -->
+
+            <!-- // Womens Clothing -->
+            <span class="flex items-center" v-else-if="products.category == this.womens">
+              <span class="mr-3" v-if="!isloaded" style="color: var(--color-6)"
+                >0/5</span
+              >
+              <span class="mr-3" v-else>{{ products.rating.rate }}/5</span>
+              <svg
+                fill="currentColor"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                class="w-4 h-4"
+                style="color: var(--color-1)"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
+                ></path>
+              </svg>
+              <svg
+                fill="currentColor"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                class="w-4 h-4"
+                style="color: var(--color-1)"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
+                ></path>
+              </svg>
+              <svg
+                fill="currentColor"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                class="w-4 h-4"
+                style="color: var(--color-1)"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
+                ></path>
+              </svg>
+              <svg
+                fill="currentColor"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                class="w-4 h-4"
+                style="color: var(--color-1)"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
+                ></path>
+              </svg>
+              <svg
+                fill="none"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                class="w-4 h-4"
+                style="color: var(--color-1)"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
+                ></path>
+              </svg>
+            </span>
+            <!-- // Womens Clothing -->
           </div>
           <p class="leading-relaxed" style="color: var(--color-3)">
             {{ products.description }}
           </p>
           <div class="flex mt-6 items-center pb-5 border-b mb-5"></div>
           <div>
+
+            <!-- // Mens Clothing -->
             <span
+              v-if="products.category == this.mens"
               class="title-font font-medium text-2xl"
               style="color: var(--color-4)"
               >${{ products.price }}</span
             >
-            <div class="mt-4 flex justify-between items-center">
+            <!-- // Mens Clothing -->
+
+            <!-- // Womens Clothing -->
+            <span
+              v-else-if="products.category == this.womens"
+              class="title-font font-medium text-2xl"
+              style="color: var(--color-4)"
+              >${{ products.price }}</span
+            >
+            <!-- // Womens Clothing -->
+
+            <!-- // Mens Clothing -->
+            <div class="mt-4 flex justify-between items-center" v-if="products.category == this.mens">
               <button
                 class="text-white border py-2.5 px-8 md:px-14 focus:outline-none rounded"
                 style="background: var(--color-4)"
@@ -193,6 +359,25 @@ export default {
                 Next Product
               </button>
             </div>
+            <!-- // Mens Clothing -->
+
+            <!-- // Womens Clothing -->
+            <div class="mt-4 flex justify-between items-center" v-else-if="products.category == this.womens">
+              <button
+                class="text-white border py-2.5 px-8 md:px-14 focus:outline-none rounded"
+                style="background: var(--color-1)"
+              >
+                Buy Now
+              </button>
+              <button
+                @click="getProducts()"
+                class="py-2 px-8 md:px-14 focus:outline-none rounded"
+                style="border: 3px solid var(--color-1); color: var(--color-1)"
+              >
+                Next Product
+              </button>
+            </div>
+            <!-- // Womens Clothing -->
           </div>
         </div>
       </div>
